@@ -82,6 +82,11 @@ function __fab_completion() {
     # Return if "fab" command doesn't exists
     [[ -e `which fab` ]] || return 0
 
+    # Use "fab" from virtualenv if it actived and has "fab" command.
+    # Otherwise use fab from PATH
+    local fab="fab"
+    [[ -n $VIRTUAL_ENV && -e "$VIRTUAL_ENV/bin/fab" ]] && fab="$VIRTUAL_ENV/bin/fab"
+
     # Variables to hold the current word and possible matches
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local opts=()
@@ -91,7 +96,7 @@ function __fab_completion() {
         -*)
             if [[ -z "${__FAB_COMPLETION_LONG_OPT}" ]]; then
                 export __FAB_COMPLETION_LONG_OPT=$(
-                    fab --help | egrep -o "\-\-[A-Za-z_\-]+\=?" | sort -u)
+                    $fab --help | egrep -o "\-\-[A-Za-z_\-]+\=?" | sort -u)
             fi
             opts="${__FAB_COMPLETION_LONG_OPT}"
             ;;
@@ -115,13 +120,13 @@ function __fab_completion() {
                     # If use cache
                     if [[ ! -s ${FAB_COMPLETION_CACHED_TASKS_FILENAME} ||
                           $(__fab_fabfile_mtime) -gt $(__fab_chache_mtime) ]]; then
-                        fab --shortlist > ${FAB_COMPLETION_CACHED_TASKS_FILENAME} \
+                        $fab --shortlist > ${FAB_COMPLETION_CACHED_TASKS_FILENAME} \
                             2> /dev/null
                     fi
                     opts=$(cat ${FAB_COMPLETION_CACHED_TASKS_FILENAME})
                 else
                     # Without cache
-                    opts=$(fab --shortlist 2> /dev/null)
+                    opts=$($fab --shortlist 2> /dev/null)
                 fi
             fi
             ;;
