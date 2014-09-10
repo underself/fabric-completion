@@ -1,6 +1,9 @@
 # Bash completion for [fabric](http://fabfile.org)
 
 
+## Repo moved to [fabric-completion](https://github.com/kbakulin/fabric-completion)
+
+
 ## Features
 
 This script provides completion for `fab`'s tasks and long options.
